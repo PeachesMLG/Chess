@@ -1,5 +1,5 @@
-[submodule "dependancies/glfw"]
-	path = dependancies/glfw
+[submodule "dependencies/glfw"]
+	path = dependencies/glfw
 	url = https://github.com/glfw/glfw/
 [submodule "dependencies/glad"]
 	path = dependencies/glad
