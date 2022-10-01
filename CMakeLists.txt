@@ -3,13 +3,9 @@ project(Chess)
 
 set(CMAKE_CXX_STANDARD 14)
 
-include_directories(../glfw/include)
-include_directories(include)
+add_subdirectory("dependencies/glad")
+add_subdirectory("dependencies/glfw")
 
-link_libraries(GL glfw3 -l:libGLEW.a)
+add_executable(Chess main.cpp Shader.cpp Shader.h)
 
-
-link_directories(include/GL)
-link_directories(../glfw/build/src/)
-
-add_executable(Chess main.cpp Game.cpp Game.h Item.h stb_image.cpp stb_image.h Board.cpp Board.h Texture.cpp Texture.h)
+target_link_libraries(Chess PUBLIC glfw glad)
