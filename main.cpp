@@ -20,6 +20,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 void generateTexture(char const *path, int textureUnit) {
     unsigned int texture;
     glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -41,7 +42,7 @@ void generateTexture(char const *path, int textureUnit) {
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
-    glBindTextureUnit(textureUnit, texture);
+    glBindTextureUnit(texture, textureUnit);
 }
 
 int main() {
