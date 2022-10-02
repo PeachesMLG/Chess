@@ -11,5 +11,9 @@ uniform sampler2D[3] ourTextures;
 void main()
 {
     int index = int(ourTexId);
-    FragColor = texture(ourTextures[index], ourTexCoord);
+    if (index == -1) {
+        FragColor = ourColor;
+    } else {
+        FragColor = texture(ourTextures[index], ourTexCoord);
+    }
 }
