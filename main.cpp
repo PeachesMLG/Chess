@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include "Shader.h"
+#include "Board.h"
 
 void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -45,6 +46,54 @@ void generateTexture(char const *path, int textureUnit) {
     glBindTextureUnit(texture, textureUnit);
 }
 
+void APIENTRY glDebugOutput(GLenum source,
+                             GLenum type,
+                             unsigned int id,
+                             GLenum severity,
+                             GLsizei length,
+                             const char *message,
+                             const void *userParam)
+{
+    // ignore non-significant error/warning codes
+    if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
+
+    std::cout << "---------------" << std::endl;
+    std::cout << "Debug message (" << id << "): " <<  message << std::endl;
+
+    switch (source)
+    {
+        case GL_DEBUG_SOURCE_API:             std::cout << "Source: API"; break;
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:   std::cout << "Source: Window System"; break;
+        case GL_DEBUG_SOURCE_SHADER_COMPILER: std::cout << "Source: Shader Compiler"; break;
+        case GL_DEBUG_SOURCE_THIRD_PARTY:     std::cout << "Source: Third Party"; break;
+        case GL_DEBUG_SOURCE_APPLICATION:     std::cout << "Source: Application"; break;
+        case GL_DEBUG_SOURCE_OTHER:           std::cout << "Source: Other"; break;
+    } std::cout << std::endl;
+
+    switch (type)
+    {
+        case GL_DEBUG_TYPE_ERROR:               std::cout << "Type: Error"; break;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: std::cout << "Type: Deprecated Behaviour"; break;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  std::cout << "Type: Undefined Behaviour"; break;
+        case GL_DEBUG_TYPE_PORTABILITY:         std::cout << "Type: Portability"; break;
+        case GL_DEBUG_TYPE_PERFORMANCE:         std::cout << "Type: Performance"; break;
+        case GL_DEBUG_TYPE_MARKER:              std::cout << "Type: Marker"; break;
+        case GL_DEBUG_TYPE_PUSH_GROUP:          std::cout << "Type: Push Group"; break;
+        case GL_DEBUG_TYPE_POP_GROUP:           std::cout << "Type: Pop Group"; break;
+        case GL_DEBUG_TYPE_OTHER:               std::cout << "Type: Other"; break;
+    } std::cout << std::endl;
+
+    switch (severity)
+    {
+        case GL_DEBUG_SEVERITY_HIGH:         std::cout << "Severity: high"; break;
+        case GL_DEBUG_SEVERITY_MEDIUM:       std::cout << "Severity: medium"; break;
+        case GL_DEBUG_SEVERITY_LOW:          std::cout << "Severity: low"; break;
+        case GL_DEBUG_SEVERITY_NOTIFICATION: std::cout << "Severity: notification"; break;
+    } std::cout << std::endl;
+    std::cout << std::endl;
+}
+
+
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -64,64 +113,17 @@ int main() {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-
-    Shader shader("/home/chris/CLionProjects/Chess/assets/shader.vert",
-                  "/home/chris/CLionProjects/Chess/assets/shader.frag");
-
-    struct Vertex {
-        float Position[3];
-        float Color[4];
-        float TextureCord[2];
-        float TextureId;
-    };
-
-    Vertex vertices[] = {
-            0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, -1.0f,
-            0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, -1.0f,
-            1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f,
-            1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, -1.0f,
-
-            -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 2.0f,
-            -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 2.0f,
-            0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 2.0f,
-            0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 2.0f,
-    };
-
-    unsigned int indices[] = {
-            0, 1, 3, 1, 2, 3,
-
-            4, 5, 7, 5, 6, 7,
-    };
-    unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, Position));
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, Color));
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, TextureCord));
-    glEnableVertexAttribArray(2);
-
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, TextureId));
-    glEnableVertexAttribArray(3);
-
-    generateTexture("/home/chris/CLionProjects/Chess/assets/wk.png",1);
-    generateTexture("/home/chris/CLionProjects/Chess/assets/wp.png",2);
+    Shader shader(
+            "/home/chris/CLionProjects/Chess/assets/shader.vert",
+            "/home/chris/CLionProjects/Chess/assets/shader.frag"
+    );
+    Board board = Board();
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(glDebugOutput, nullptr);
 
     glClearColor(0.192156862745f, 0.180392156863f, 0.16862745098f, 1.0f);
     while (!glfwWindowShouldClose(window)) {
@@ -132,21 +134,17 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.use();
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, nullptr);
+        board.drawBoard();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-        double endTime = glfwGetTime();
 
-        double time = (endTime - startTime) * 1000;
+        double time = (glfwGetTime() - startTime) * 1000;
         std::string title = "Chess - FPS: " + std::to_string((int) (1000 / time));
         glfwSetWindowTitle(window, title.c_str());
     }
 
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+    board.dispose();
 
     glfwTerminate();
     return 0;
