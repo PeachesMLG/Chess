@@ -10,7 +10,7 @@ out float ourTexId;
 
 void main()
 {
-    gl_Position = vec4(aPos, 1.0);
+    gl_Position = vec4((aPos / vec3(4, 4, 4)) - vec3(1, 1, 1), 1.0);
     ourColor = aColor;
     ourTexCoord = aTexCoord;
     ourTexId = aTexId;
