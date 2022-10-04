@@ -6,7 +6,7 @@ in vec4 ourColor;
 in vec2 ourTexCoord;
 in float ourTexId;
 
-uniform sampler2D[3] ourTextures;
+uniform sampler2D[12] ourTextures;
 
 void main()
 {
