@@ -61,7 +61,7 @@ Board::Board() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, TextureCord));
     glEnableVertexAttribArray(2);
 
-    glVertexAttribPointer(3, 1, GL_INT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, TextureId));
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, TextureId));
     glEnableVertexAttribArray(3);
 }
 
@@ -112,8 +112,9 @@ void Board::drawPieces() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, TextureCord));
     glEnableVertexAttribArray(2);
 
-    glVertexAttribPointer(3, 1, GL_INT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, TextureId));
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, TextureId));
     glEnableVertexAttribArray(3);
+
     glBindVertexArray(PVAO);
     glDrawElements(GL_TRIANGLES, 384, GL_UNSIGNED_INT, nullptr);
 }

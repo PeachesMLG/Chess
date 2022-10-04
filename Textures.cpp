@@ -30,7 +30,7 @@ void generateTexture(char const *path, int textureUnit) {
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
-    glBindTextureUnit(texture, textureUnit);
+    glBindTextureUnit(textureUnit, texture);
 }
 
 void Textures::initialise() {

@@ -10,7 +10,7 @@ struct Vertex {
     int Position[3];
     float Color[4];
     float TextureCord[2];
-    int TextureId;
+    float TextureId;
 };
 
 struct Color {
