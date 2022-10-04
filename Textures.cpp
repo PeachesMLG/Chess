@@ -34,17 +34,17 @@ void generateTexture(char const *path, int textureUnit) {
 }
 
 void Textures::initialise() {
-    generateTexture("/home/chris/CLionProjects/Chess/assets/wr.png", 0);
-    generateTexture("/home/chris/CLionProjects/Chess/assets/wb.png", 1);
-    generateTexture("/home/chris/CLionProjects/Chess/assets/wn.png", 2);
-    generateTexture("/home/chris/CLionProjects/Chess/assets/wq.png", 3);
-    generateTexture("/home/chris/CLionProjects/Chess/assets/wk.png", 4);
-    generateTexture("/home/chris/CLionProjects/Chess/assets/wp.png", 5);
-
-    generateTexture("/home/chris/CLionProjects/Chess/assets/br.png", 6);
-    generateTexture("/home/chris/CLionProjects/Chess/assets/bb.png", 7);
-    generateTexture("/home/chris/CLionProjects/Chess/assets/bn.png", 8);
-    generateTexture("/home/chris/CLionProjects/Chess/assets/bq.png", 9);
-    generateTexture("/home/chris/CLionProjects/Chess/assets/bk.png", 10);
-    generateTexture("/home/chris/CLionProjects/Chess/assets/bp.png", 11);
+    generateTexture("/home/chris/CLionProjects/Chess/assets/wr.png", White_Rook);
+    generateTexture("/home/chris/CLionProjects/Chess/assets/wb.png", White_Bishop);
+    generateTexture("/home/chris/CLionProjects/Chess/assets/wn.png", White_Knight);
+    generateTexture("/home/chris/CLionProjects/Chess/assets/wq.png", White_Queen);
+    generateTexture("/home/chris/CLionProjects/Chess/assets/wk.png", White_King);
+    generateTexture("/home/chris/CLionProjects/Chess/assets/wp.png", White_Pawn);
+    generateTexture("/home/chris/CLionProjects/Chess/assets/br.png", Black_Rook);
+    generateTexture("/home/chris/CLionProjects/Chess/assets/bb.png", Black_Bishop);
+    generateTexture("/home/chris/CLionProjects/Chess/assets/bn.png", Black_Knight);
+    generateTexture("/home/chris/CLionProjects/Chess/assets/bq.png", Black_Queen);
+    generateTexture("/home/chris/CLionProjects/Chess/assets/bk.png", Black_King);
+    generateTexture("/home/chris/CLionProjects/Chess/assets/bp.png", Black_Pawn);
+    generateTexture("/home/chris/CLionProjects/Chess/assets/wr.png", 12);
 }

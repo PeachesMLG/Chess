@@ -79,10 +79,11 @@ void Board::drawPieces() {
         int file = item.position % 8;
         int rank = item.position / 8;
         Color color = colors[(file + rank) % 2];
-        vertices[(item.position * 4) + 0] = {file + 0, rank + 0, 0, color.r, color.g, color.b, 1.0f, 1.0f, 1.0f, 0};
-        vertices[(item.position * 4) + 1] = {file + 0, rank + 1, 0, color.r, color.g, color.b, 1.0f, 1.0f, 0.0f, 0};
-        vertices[(item.position * 4) + 2] = {file + 1, rank + 1, 0, color.r, color.g, color.b, 1.0f, 0.0f, 0.0f, 0};
-        vertices[(item.position * 4) + 3] = {file + 1, rank + 0, 0, color.r, color.g, color.b, 1.0f, 0.0f, 1.0f, 0};
+        float texture = getTexture(item);
+        vertices[(item.position * 4) + 0] = {file + 0, rank + 0, 0, color.r, color.g, color.b, 1.0f, 0.0f, 1.0f, texture};
+        vertices[(item.position * 4) + 1] = {file + 0, rank + 1, 0, color.r, color.g, color.b, 1.0f, 0.0f, 0.0f, texture};
+        vertices[(item.position * 4) + 2] = {file + 1, rank + 1, 0, color.r, color.g, color.b, 1.0f, 1.0f, 0.0f, texture};
+        vertices[(item.position * 4) + 3] = {file + 1, rank + 0, 0, color.r, color.g, color.b, 1.0f, 1.0f, 1.0f, texture};
 
         indices[(item.position * 6) + 0] = (item.position * 4) + 0;
         indices[(item.position * 6) + 1] = (item.position * 4) + 1;
