@@ -118,14 +118,16 @@ void processInput(GLFWwindow *window) {
         Item *currentItem = board.getItem(board.selectedPiece);
         if (currentItem != nullptr) {
             Move move{position, board.selectedPiece};
-            board.move(move);
-            board.selectedPiece = -1;
-            return;
+            if (board.move(move)) {
+                board.selectedPiece = -1;
+                return;
+            }
         }
         if (selectedItem != nullptr) {
             board.selectedPiece = position;
             return;
         }
+        board.selectedPiece = -1;
     }
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);

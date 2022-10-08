@@ -70,7 +70,7 @@ public:
 
     void getMoves(Item *item, std::vector<int> *moves);
 
-    void move(Move move);
+    bool move(Move move);
 };
 
 

@@ -104,13 +104,14 @@ void Board::getMoves(Item *item, std::vector<int> *moves) {
     }
 }
 
-void Board::move(Move move) {
+bool Board::move(Move move) {
     std::vector<int> moves;
     getMoves(getItem(move.from), &moves);
-    if (std::find(moves.begin(), moves.end(), move.to) == moves.end()) return;
+    if (std::find(moves.begin(), moves.end(), move.to) == moves.end()) return false;
     std::erase_if(gameBoard, [&](const Item &item) {
         return item.position == move.to;
     });
     getItem(move.from)->position = move.to;
     lastMove = move;
+    return true;
 }
