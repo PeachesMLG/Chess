@@ -4,8 +4,10 @@
 #include "Renderer.h"
 
 Color colors[] = {
-        {0.463f, 0.588f, 0.337f},
-        {0.933f, 0.933f, 0.824f},
+        {0.463f, 0.588f, 0.337f}, // Black
+        {0.933f, 0.933f, 0.824f}, // White
+        {0.73f,  0.79f,   0.16f}, // Black (Selected)
+        {0.96f,  0.96f,   0.41f}, // White (Selected)
 };
 
 std::map<char, Piece> pieces = {
@@ -25,27 +27,28 @@ void Board::initialise() {
 void Board::drawBoard() {
     boardRenderer.clear();
     for (int i = 0; i < 64; ++i) {
+        int offset = selectedPiece == i ? 2 : 0;
         int file = i % 8;
         int rank = i / 8;
-        boardRenderer.render(i, colors[(file + rank) % 2], -1);
+        boardRenderer.render(i, colors[offset + (file + rank) % 2], -1);
     }
     boardRenderer.draw();
 }
 
 void Board::drawPieces() {
     piecesRenderer.clear();
-    for (Item item : gameBoard) {
+    for (Item item: gameBoard) {
         piecesRenderer.render(item.position, colors[0], getTexture(item));
     }
     piecesRenderer.draw();
 }
 
-void Board::draw(){
+void Board::draw() {
     drawBoard();
     drawPieces();
 }
 
-void Board::generateBoard(const std::string& fen) {
+void Board::generateBoard(const std::string &fen) {
     std::cout << "Loading Position: " << fen << std::endl;
     std::stringstream stringStream(fen);
     std::vector<std::string> fenData;

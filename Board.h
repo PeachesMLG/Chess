@@ -46,6 +46,7 @@ private:
 public:
     Player playerTurn;
     std::vector<Item> gameBoard;
+    int selectedPiece = -1;
     void initialise();
     void draw();
     void dispose();

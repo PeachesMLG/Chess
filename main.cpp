@@ -12,6 +12,7 @@
 
 
 Board board;
+bool clicking = false;
 
 void APIENTRY glDebugOutput(GLenum source,
                             GLenum type,
@@ -98,6 +99,28 @@ void APIENTRY glDebugOutput(GLenum source,
 }
 
 void processInput(GLFWwindow *window) {
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+        clicking = false;
+    }
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        if(clicking) return;
+        clicking = true;
+        int windowWidth, windowHeight;
+        glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
+        double xPos, yPos;
+        glfwGetCursorPos(window, &xPos, &yPos);
+        int file = 8 - (yPos / windowHeight * 8);
+        int rank = xPos / windowWidth * 8;
+        int position = (file * 8) + rank;
+        if (board.selectedPiece == position)return;
+        for (Item item: board.gameBoard) {
+            if (item.position != position)continue;
+            board.selectedPiece = position;
+            return;
+        }
+        board.selectedPiece = -1;
+        std::cout << "Clicked Mouse " << "No Item" << std::endl;
+    }
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
