@@ -7,6 +7,7 @@
 #include <vector>
 #include "Textures.h"
 #include "Renderer.h"
+#include <optional>
 
 enum Player {
     White, Black
@@ -21,11 +22,19 @@ struct Item {
     int position;
 };
 
+struct Move {
+    int to;
+    int from;
+};
+
 class Board {
 private:
     Renderer boardRenderer;
     Renderer piecesRenderer;
+    Move lastMove = {-1, -1};
+
     void drawBoard();
+
     void drawPieces();
 
     float getTexture(Item item) {
@@ -43,14 +52,25 @@ private:
         if (item.player == Black && item.piece == Pawn)return Black_Pawn;
         return -1;
     }
+
 public:
     Player playerTurn;
     std::vector<Item> gameBoard;
     int selectedPiece = -1;
+
     void initialise();
+
     void draw();
+
     void dispose();
+
     void generateBoard(const std::string &fen);
+
+    Item *getItem(int position);
+
+    void getMoves(Item *item, std::vector<int> *moves);
+
+    void move(Move move);
 };
 
 

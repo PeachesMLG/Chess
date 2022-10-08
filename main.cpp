@@ -9,6 +9,7 @@
 #include "Shader.h"
 #include "Board.h"
 #include "Textures.h"
+#include <algorithm>
 
 
 Board board;
@@ -103,7 +104,7 @@ void processInput(GLFWwindow *window) {
         clicking = false;
     }
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        if(clicking) return;
+        if (clicking) return;
         clicking = true;
         int windowWidth, windowHeight;
         glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
@@ -112,14 +113,19 @@ void processInput(GLFWwindow *window) {
         int file = 8 - (yPos / windowHeight * 8);
         int rank = xPos / windowWidth * 8;
         int position = (file * 8) + rank;
-        if (board.selectedPiece == position)return;
-        for (Item item: board.gameBoard) {
-            if (item.position != position)continue;
+        if (board.selectedPiece == position)board.selectedPiece = -1;
+        Item *selectedItem = board.getItem(position);
+        Item *currentItem = board.getItem(board.selectedPiece);
+        if (currentItem != nullptr) {
+            Move move{position, board.selectedPiece};
+            board.move(move);
+            board.selectedPiece = -1;
+            return;
+        }
+        if (selectedItem != nullptr) {
             board.selectedPiece = position;
             return;
         }
-        board.selectedPiece = -1;
-        std::cout << "Clicked Mouse " << "No Item" << std::endl;
     }
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);

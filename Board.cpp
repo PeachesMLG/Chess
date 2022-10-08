@@ -2,12 +2,13 @@
 #include "Board.h"
 #include "Shader.h"
 #include "Renderer.h"
+#include <algorithm>
 
 Color colors[] = {
         {0.463f, 0.588f, 0.337f}, // Black
         {0.933f, 0.933f, 0.824f}, // White
-        {0.73f,  0.79f,   0.16f}, // Black (Selected)
-        {0.96f,  0.96f,   0.41f}, // White (Selected)
+        {0.73f,  0.79f,  0.16f}, // Black (Selected)
+        {0.96f,  0.96f,  0.41f}, // White (Selected)
 };
 
 std::map<char, Piece> pieces = {
@@ -26,8 +27,13 @@ void Board::initialise() {
 
 void Board::drawBoard() {
     boardRenderer.clear();
+    std::vector<int> moves;
+    Item *item = getItem(selectedPiece);
+    getMoves(item, &moves);
     for (int i = 0; i < 64; ++i) {
-        int offset = selectedPiece == i ? 2 : 0;
+        bool isMove = std::find(moves.begin(), moves.end(), i) != moves.end();
+        bool isLastMove = lastMove.to == i || lastMove.from == i;
+        int offset = selectedPiece == i || isMove || isLastMove ? 2 : 0;
         int file = i % 8;
         int rank = i / 8;
         boardRenderer.render(i, colors[offset + (file + rank) % 2], -1);
@@ -80,4 +86,31 @@ void Board::generateBoard(const std::string &fen) {
 void Board::dispose() {
     boardRenderer.dispose();
     piecesRenderer.dispose();
+}
+
+
+Item *Board::getItem(int position) {
+    for (Item& item: gameBoard) {
+        if (item.position == position) return &item;
+    }
+    return nullptr;
+}
+
+void Board::getMoves(Item *item, std::vector<int> *moves) {
+    if (item == nullptr)return;
+    if (item->piece == Pawn) {
+        moves->push_back(item->position + 8);
+        moves->push_back(item->position + 16);
+    }
+}
+
+void Board::move(Move move) {
+    std::vector<int> moves;
+    getMoves(getItem(move.from), &moves);
+    if (std::find(moves.begin(), moves.end(), move.to) == moves.end()) return;
+    std::erase_if(gameBoard, [&](const Item &item) {
+        return item.position == move.to;
+    });
+    getItem(move.from)->position = move.to;
+    lastMove = move;
 }
