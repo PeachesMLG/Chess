@@ -67,6 +67,7 @@ public:
     void generateBoard(const std::string &fen);
 
     Item *getItem(int position);
+    Item *getItem(int file, int rank);
 
     void getMoves(Item *item, std::vector<int> *moves);
 

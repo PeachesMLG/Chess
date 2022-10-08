@@ -2,6 +2,7 @@
 #include "Board.h"
 #include "Shader.h"
 #include "Renderer.h"
+#include "Moves.h"
 #include <algorithm>
 
 Color colors[] = {
@@ -90,18 +91,29 @@ void Board::dispose() {
 
 
 Item *Board::getItem(int position) {
-    for (Item& item: gameBoard) {
+    for (Item &item: gameBoard) {
         if (item.position == position) return &item;
+    }
+    return nullptr;
+}
+
+Item *Board::getItem(int file, int rank) {
+    for (Item &item: gameBoard) {
+        int itemFile = item.position % 8;
+        int itemRank = item.position / 8;
+        if (itemFile == file && itemRank == rank)return &item;
     }
     return nullptr;
 }
 
 void Board::getMoves(Item *item, std::vector<int> *moves) {
     if (item == nullptr)return;
-    if (item->piece == Pawn) {
-        moves->push_back(item->position + 8);
-        moves->push_back(item->position + 16);
-    }
+    if (item->piece == Pawn) Moves::getPawnMoves(item, moves, this);
+    if (item->piece == Knight) Moves::getKnightMoves(item, moves, this);
+    if (item->piece == King) Moves::getKingMoves(item, moves, this);
+    if (item->piece == Bishop) Moves::getBishopMoves(item, moves, this);
+    if (item->piece == Rook) Moves::getRookMoves(item, moves, this);
+    if (item->piece == Queen) Moves::getQueenMoves(item, moves, this);
 }
 
 bool Board::move(Move move) {
@@ -113,5 +125,6 @@ bool Board::move(Move move) {
     });
     getItem(move.from)->position = move.to;
     lastMove = move;
+    playerTurn = playerTurn == White ? Black : White;
     return true;
 }
