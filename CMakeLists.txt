@@ -6,6 +6,6 @@ set(CMAKE_CXX_STANDARD 14)
 add_subdirectory("dependencies/glad")
 add_subdirectory("dependencies/glfw")
 
-add_executable(Chess main.cpp Shader.cpp Shader.h Board.cpp Board.h Textures.cpp Textures.h)
+add_executable(Chess main.cpp Shader.cpp Shader.h Board.cpp Board.h Textures.cpp Textures.h Renderer.cpp Renderer.h)
 
 target_link_libraries(Chess PUBLIC glfw glad)

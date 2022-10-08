@@ -6,17 +6,7 @@
 #include <map>
 #include <vector>
 #include "Textures.h"
-
-struct Vertex {
-    int Position[3];
-    float Color[4];
-    float TextureCord[2];
-    float TextureId;
-};
-
-struct Color {
-    float r, g, b;
-};
+#include "Renderer.h"
 
 enum Player {
     White, Black
@@ -33,10 +23,10 @@ struct Item {
 
 class Board {
 private:
-    Player playerTurn;
-    std::vector<Item> gameBoard;
-public:
-    Board();
+    Renderer boardRenderer;
+    Renderer piecesRenderer;
+    void drawBoard();
+    void drawPieces();
 
     float getTexture(Item item) {
         if (item.player == White && item.piece == Rook)return White_Rook;
@@ -53,13 +43,12 @@ public:
         if (item.player == Black && item.piece == Pawn)return Black_Pawn;
         return -1;
     }
-
-    void drawBoard();
-
-    void drawPieces();
-
+public:
+    Player playerTurn;
+    std::vector<Item> gameBoard;
+    void initialise();
+    void draw();
     void dispose();
-
     void generateBoard(const std::string &fen);
 };
 

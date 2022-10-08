@@ -10,14 +10,8 @@
 #include "Board.h"
 #include "Textures.h"
 
-void processInput(GLFWwindow *window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
+Board board;
 
 void APIENTRY glDebugOutput(GLenum source,
                             GLenum type,
@@ -103,6 +97,15 @@ void APIENTRY glDebugOutput(GLenum source,
     std::cout << std::endl;
 }
 
+void processInput(GLFWwindow *window) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+    }
+}
+
+void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
 
 int main() {
     std::string fen;
@@ -135,7 +138,7 @@ int main() {
 
     Textures::initialise();
 
-    Board board = Board();
+    board.initialise();
     board.generateBoard(fen);
 
     glEnable(GL_BLEND);
@@ -153,8 +156,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.use();
-        board.drawBoard();
-        board.drawPieces();
+        board.draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
