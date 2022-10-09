@@ -157,6 +157,7 @@ bool Board::move(Move move) {
         if (Board::getPlayerMoves(playerTurn, &gameBoard).empty()) {
             Sounds::playCheckmateSound();
             std::cout << "Checkmate! " << (playerTurn == White ? "Black" : "White") << " Wins!";
+            return true;
         } else {
             Sounds::playCheckSound();
         }
@@ -164,6 +165,10 @@ bool Board::move(Move move) {
         Sounds::playCaptureSound();
     } else {
         Sounds::playMoveSound();
+    }
+    if (playerTurn == Black) {
+        std::vector<Move> aiMoves = getPlayerMoves(Black, &gameBoard);
+        this->move(aiMoves[rand() % aiMoves.size()]);
     }
     return true;
 }
