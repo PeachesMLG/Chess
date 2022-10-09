@@ -28,9 +28,8 @@ void Board::initialise() {
 
 void Board::drawBoard() {
     boardRenderer.clear();
-    std::vector<int> moves;
-    Item *item = getItem(selectedPiece);
-    getMoves(item, &moves);
+    Item *item = getItem(selectedPiece, &gameBoard);
+    std::vector<int> moves = getMoves(item, &gameBoard, true);
     for (int i = 0; i < 64; ++i) {
         bool isMove = std::find(moves.begin(), moves.end(), i) != moves.end();
         bool isLastMove = lastMove.to == i || lastMove.from == i;
@@ -90,15 +89,15 @@ void Board::dispose() {
 }
 
 
-Item *Board::getItem(int position) {
-    for (Item &item: gameBoard) {
+Item *Board::getItem(int position, std::vector<Item> *board) {
+    for (Item &item: *board) {
         if (item.position == position) return &item;
     }
     return nullptr;
 }
 
-Item *Board::getItem(int file, int rank) {
-    for (Item &item: gameBoard) {
+Item *Board::getItem(int file, int rank, std::vector<Item> *board) {
+    for (Item &item: *board) {
         int itemFile = item.position % 8;
         int itemRank = item.position / 8;
         if (itemFile == file && itemRank == rank)return &item;
@@ -106,25 +105,56 @@ Item *Board::getItem(int file, int rank) {
     return nullptr;
 }
 
-void Board::getMoves(Item *item, std::vector<int> *moves) {
-    if (item == nullptr)return;
-    if (item->piece == Pawn) Moves::getPawnMoves(item, moves, this);
-    if (item->piece == Knight) Moves::getKnightMoves(item, moves, this);
-    if (item->piece == King) Moves::getKingMoves(item, moves, this);
-    if (item->piece == Bishop) Moves::getBishopMoves(item, moves, this);
-    if (item->piece == Rook) Moves::getRookMoves(item, moves, this);
-    if (item->piece == Queen) Moves::getQueenMoves(item, moves, this);
+std::vector<int> Board::getMoves(Item *item, std::vector<Item> *board, bool legalMoves) {
+    std::vector<int> moves;
+    if (item == nullptr)return moves;
+    if (item->piece == Pawn) Moves::getPawnMoves(item, &moves, board);
+    if (item->piece == Knight) Moves::getKnightMoves(item, &moves, board);
+    if (item->piece == King) Moves::getKingMoves(item, &moves, board);
+    if (item->piece == Bishop) Moves::getBishopMoves(item, &moves, board);
+    if (item->piece == Rook) Moves::getRookMoves(item, &moves, board);
+    if (item->piece == Queen) Moves::getQueenMoves(item, &moves, board);
+
+    if (legalMoves) {
+        std::erase_if(moves, [&](const int &move) {
+            return resultsInCheck({move, item->position}, playerTurn);
+        });
+    }
+
+    return moves;
 }
 
 bool Board::move(Move move) {
-    std::vector<int> moves;
-    getMoves(getItem(move.from), &moves);
+    if (getItem(move.from, &gameBoard)->player != playerTurn)return false;
+    std::vector<int> moves = getMoves(getItem(move.from, &gameBoard), &gameBoard, true);
     if (std::find(moves.begin(), moves.end(), move.to) == moves.end()) return false;
     std::erase_if(gameBoard, [&](const Item &item) {
         return item.position == move.to;
     });
-    getItem(move.from)->position = move.to;
+    if(resultsInCheck(move, playerTurn == White ? Black : White)){
+        std::cout << "Check!" << std::endl;
+    }
+    getItem(move.from, &gameBoard)->position = move.to;
     lastMove = move;
     playerTurn = playerTurn == White ? Black : White;
     return true;
+}
+
+int Board::getKing(Player player, std::vector<Item> *board) {
+    for (Item &item: *board) {
+        if (item.piece == King && item.player == player)return item.position;
+    }
+    return -1;
+}
+
+bool Board::resultsInCheck(Move move, Player player) {
+    std::vector<Item> board = gameBoard;
+    getItem(move.from, &board)->position = move.to;
+    int kingPosition = getKing(player, &board);
+    for (Item item: board) {
+        if (item.player == player)continue;
+        std::vector<int> moves = getMoves(&item, &board, false);
+        if (std::find(moves.begin(), moves.end(), kingPosition) != moves.end()) return true;
+    }
+    return false;
 }

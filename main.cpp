@@ -114,8 +114,8 @@ void processInput(GLFWwindow *window) {
         int rank = xPos / windowWidth * 8;
         int position = (file * 8) + rank;
         if (board.selectedPiece == position)board.selectedPiece = -1;
-        Item *selectedItem = board.getItem(position);
-        Item *currentItem = board.getItem(board.selectedPiece);
+        Item *selectedItem = board.getItem(position, &board.gameBoard);
+        Item *currentItem = board.getItem(board.selectedPiece, &board.gameBoard);
         if (currentItem != nullptr) {
             Move move{position, board.selectedPiece};
             if (board.move(move)) {

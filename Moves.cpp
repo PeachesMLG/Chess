@@ -1,20 +1,20 @@
 #include "Moves.h"
 
-bool isEmpty(int file, int rank, Board *board) {
+bool isEmpty(int file, int rank, std::vector<Item> *board) {
     if (file < 0 || file > 7) return false;
     if (rank < 0 || rank > 7) return false;
-    Item *occupiedItem = board->getItem(file, rank);
+    Item *occupiedItem = Board::getItem(file, rank, board);
     return occupiedItem == nullptr;
 }
 
-bool isEnemy(Item *item, int file, int rank, Board *board) {
+bool isEnemy(Item *item, int file, int rank, std::vector<Item> *board) {
     if (file < 0 || file > 7) return false;
     if (rank < 0 || rank > 7) return false;
-    Item *occupiedItem = board->getItem(file, rank);
+    Item *occupiedItem = Board::getItem(file, rank, board);
     return occupiedItem != nullptr && occupiedItem->player != item->player;
 }
 
-bool isEmptyOrEnemy(Item *item, int file, int rank, Board *board) {
+bool isEmptyOrEnemy(Item *item, int file, int rank, std::vector<Item> *board) {
     return isEmpty(file, rank, board) || isEnemy(item, file, rank, board);
 }
 
@@ -22,7 +22,7 @@ int getPosition(int file, int rank) {
     return (rank * 8) + file;
 }
 
-void Moves::getPawnMoves(Item *item, std::vector<int> *moves, Board *board) {
+void Moves::getPawnMoves(Item *item, std::vector<int> *moves, std::vector<Item> *board) {
     int file = item->position % 8;
     int rank = item->position / 8;
 
@@ -46,7 +46,7 @@ void Moves::getPawnMoves(Item *item, std::vector<int> *moves, Board *board) {
     }
 }
 
-void Moves::getKnightMoves(Item *item, std::vector<int> *moves, Board *board) {
+void Moves::getKnightMoves(Item *item, std::vector<int> *moves, std::vector<Item> *board) {
     int file = item->position % 8;
     int rank = item->position / 8;
     if (isEmptyOrEnemy(item, file + 2, rank - 1, board))moves->push_back(getPosition(file + 2, rank - 1));
@@ -59,7 +59,7 @@ void Moves::getKnightMoves(Item *item, std::vector<int> *moves, Board *board) {
     if (isEmptyOrEnemy(item, file - 1, rank + 2, board))moves->push_back(getPosition(file - 1, rank + 2));
 }
 
-void Moves::getKingMoves(Item *item, std::vector<int> *moves, Board *board) {
+void Moves::getKingMoves(Item *item, std::vector<int> *moves, std::vector<Item> *board) {
     int file = item->position % 8;
     int rank = item->position / 8;
     if (isEmptyOrEnemy(item, file - 1, rank + 1, board))moves->push_back(getPosition(file - 1, rank + 1));
@@ -72,7 +72,7 @@ void Moves::getKingMoves(Item *item, std::vector<int> *moves, Board *board) {
     if (isEmptyOrEnemy(item, file + 1, rank - 1, board))moves->push_back(getPosition(file + 1, rank - 1));
 }
 
-void Moves::getBishopMoves(Item *item, std::vector<int> *moves, Board *board) {
+void Moves::getBishopMoves(Item *item, std::vector<int> *moves, std::vector<Item> *board) {
     int file = item->position % 8;
     int rank = item->position / 8;
     for (int i = 1; i <= 8; ++i) {
@@ -97,7 +97,7 @@ void Moves::getBishopMoves(Item *item, std::vector<int> *moves, Board *board) {
     }
 }
 
-void Moves::getRookMoves(Item *item, std::vector<int> *moves, Board *board) {
+void Moves::getRookMoves(Item *item, std::vector<int> *moves, std::vector<Item> *board) {
     int file = item->position % 8;
     int rank = item->position / 8;
     for (int i = 1; i <= 8; ++i) {
@@ -122,7 +122,7 @@ void Moves::getRookMoves(Item *item, std::vector<int> *moves, Board *board) {
     }
 }
 
-void Moves::getQueenMoves(Item *item, std::vector<int> *moves, Board *board) {
+void Moves::getQueenMoves(Item *item, std::vector<int> *moves, std::vector<Item> *board) {
     getBishopMoves(item, moves, board);
     getRookMoves(item, moves, board);
 }

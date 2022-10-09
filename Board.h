@@ -37,6 +37,8 @@ private:
 
     void drawPieces();
 
+    int getKing(Player player, std::vector<Item> *board);
+
     float getTexture(Item item) {
         if (item.player == White && item.piece == Rook)return White_Rook;
         if (item.player == White && item.piece == Bishop)return White_Bishop;
@@ -66,12 +68,14 @@ public:
 
     void generateBoard(const std::string &fen);
 
-    Item *getItem(int position);
-    Item *getItem(int file, int rank);
+    static Item *getItem(int position, std::vector<Item> *board);
+    static Item *getItem(int file, int rank, std::vector<Item> *board);
 
-    void getMoves(Item *item, std::vector<int> *moves);
+    std::vector<int> getMoves(Item *item, std::vector<Item> *board, bool legalMoves);
 
     bool move(Move move);
+
+    bool resultsInCheck(Move move, Player player);
 };
 
 
