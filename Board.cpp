@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "Renderer.h"
 #include "Moves.h"
+#include "Sounds.h"
 #include <algorithm>
 
 Color colors[] = {
@@ -81,6 +82,7 @@ void Board::generateBoard(const std::string &fen) {
         file++;
     }
     playerTurn = tolower(fenData[1][0]) == 'w' ? White : Black;
+    Sounds::playStartSound();
 }
 
 void Board::dispose() {
@@ -117,10 +119,22 @@ std::vector<int> Board::getMoves(Item *item, std::vector<Item> *board, bool lega
 
     if (legalMoves) {
         std::erase_if(moves, [&](const int &move) {
-            return resultsInCheck({move, item->position}, playerTurn);
+            return resultsInCheck({move, item->position}, *board, item->player);
         });
     }
 
+    return moves;
+}
+
+std::vector<Move> Board::getPlayerMoves(Player player, std::vector<Item> *board) {
+    std::vector<Move> moves;
+    for (Item item: *board) {
+        if (item.player != player)continue;
+        std::vector<int> newMoves = Board::getMoves(&item, board, true);
+        for (int move: newMoves) {
+            moves.push_back({move, item.position});
+        }
+    }
     return moves;
 }
 
@@ -128,15 +142,29 @@ bool Board::move(Move move) {
     if (getItem(move.from, &gameBoard)->player != playerTurn)return false;
     std::vector<int> moves = getMoves(getItem(move.from, &gameBoard), &gameBoard, true);
     if (std::find(moves.begin(), moves.end(), move.to) == moves.end()) return false;
+    bool capture = false;
     std::erase_if(gameBoard, [&](const Item &item) {
-        return item.position == move.to;
+        if (item.position == move.to) {
+            capture = true;
+            return true;
+        }
+        return false;
     });
-    if(resultsInCheck(move, playerTurn == White ? Black : White)){
-        std::cout << "Check!" << std::endl;
-    }
     getItem(move.from, &gameBoard)->position = move.to;
     lastMove = move;
     playerTurn = playerTurn == White ? Black : White;
+    if (isInCheck(&gameBoard, playerTurn)) {
+        if (Board::getPlayerMoves(playerTurn, &gameBoard).empty()) {
+            Sounds::playCheckmateSound();
+            std::cout << "Checkmate! " << (playerTurn == White ? "Black" : "White") << " Wins!";
+        } else {
+            Sounds::playCheckSound();
+        }
+    } else if (capture) {
+        Sounds::playCaptureSound();
+    } else {
+        Sounds::playMoveSound();
+    }
     return true;
 }
 
@@ -147,16 +175,19 @@ int Board::getKing(Player player, std::vector<Item> *board) {
     return -1;
 }
 
-bool Board::resultsInCheck(Move move, Player player) {
-    std::vector<Item> board = gameBoard;
+bool Board::resultsInCheck(Move move, std::vector<Item> board, Player player) {
     std::erase_if(board, [&](const Item &item) {
         return item.position == move.to;
     });
     getItem(move.from, &board)->position = move.to;
-    int kingPosition = getKing(player, &board);
-    for (Item item: board) {
+    return isInCheck(&board, player);
+}
+
+bool Board::isInCheck(std::vector<Item> *board, Player player) {
+    int kingPosition = getKing(player, board);
+    for (Item item: *board) {
         if (item.player == player)continue;
-        std::vector<int> moves = getMoves(&item, &board, false);
+        std::vector<int> moves = getMoves(&item, board, false);
         if (std::find(moves.begin(), moves.end(), kingPosition) != moves.end()) return true;
     }
     return false;
