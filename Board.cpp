@@ -149,6 +149,9 @@ int Board::getKing(Player player, std::vector<Item> *board) {
 
 bool Board::resultsInCheck(Move move, Player player) {
     std::vector<Item> board = gameBoard;
+    std::erase_if(board, [&](const Item &item) {
+        return item.position == move.to;
+    });
     getItem(move.from, &board)->position = move.to;
     int kingPosition = getKing(player, &board);
     for (Item item: board) {
